@@ -171,7 +171,7 @@ FROM WorldWideDeaths;
 SELECT YEAR(CONVERT(date, cVac.date)), cDea.continent, MAX(cast(cDea.total_deaths as bigint)) AS totalDeaths, MAX(cast(cVac.total_vaccinations as bigint)) AS totalVaccinations,
 MAX(cast(cVac.total_tests as bigint)) AS totalTests
 FROM PortfolioProject..covidDeaths cDea JOIN PortfolioProject..covidVaccinations cVac 
-ON cDea.location = cVac.location AND cDea.global_date = cVac.date
+	ON cDea.location = cVac.location AND cDea.global_date = cVac.date
 WHERE cDea.continent NOT IN ('')
 GROUP BY YEAR(CONVERT(date, cVac.date)), cDea.continent
 ORDER BY YEAR(CONVERT(date, cVac.date)) ASC;
