@@ -82,12 +82,12 @@ ORDER BY 1,2;
 -- Joining deaths and vaccinations tables
 SELECT *
 FROM PortfolioProject..covidDeaths cDea JOIN PortfolioProject..covidVaccinations cVac 
-ON cDea.location = cVac.location AND cDea.global_date = cVac.date;
+	ON cDea.location = cVac.location AND cDea.global_date = cVac.date;
 
 -- Total population vs Vaccinations
 SELECT cDea.continent, cDea.location, cast(cDea.global_date as date), cDea.population, cVac.new_vaccinations
 FROM PortfolioProject..covidDeaths cDea JOIN PortfolioProject..covidVaccinations cVac 
-ON cDea.location = cVac.location AND cDea.global_date = cVac.date
+	ON cDea.location = cVac.location AND cDea.global_date = cVac.date
 WHERE cDea.continent NOT IN ('')
 ORDER BY 2, 3;
 
@@ -95,7 +95,7 @@ ORDER BY 2, 3;
 -- Total population vaccinations compared to deaths
 SELECT cDea.continent, cDea.location, MAX(cast(cDea.total_deaths as bigint)) AS total_deaths, MAX(cast(cVac.total_vaccinations as bigint)) AS total_vaccinations
 FROM PortfolioProject..covidDeaths cDea JOIN PortfolioProject..covidVaccinations cVac 
-ON cDea.location = cVac.location AND cDea.global_date = cVac.date
+	ON cDea.location = cVac.location AND cDea.global_date = cVac.date
 WHERE cDea.continent NOT IN ('')
 GROUP BY cDea.continent, cDea.location
 ORDER BY 1, 2;
@@ -103,7 +103,7 @@ ORDER BY 1, 2;
 -- Total of deaths and vaccinations by location, taking the Maximun number as the total
 SELECT cDea.continent, cDea.location, MAX(cast(cDea.total_deaths as bigint)) AS total_deaths, MAX(cast(cVac.total_vaccinations as bigint)) AS total_vaccinations
 FROM PortfolioProject..covidDeaths cDea JOIN PortfolioProject..covidVaccinations cVac 
-ON cDea.location = cVac.location AND cDea.global_date = cVac.date
+	ON cDea.location = cVac.location AND cDea.global_date = cVac.date
 WHERE cDea.continent NOT IN ('') AND cVac.continent NOT IN ('')
 GROUP BY cDea.continent, cDea.location
 ORDER BY 1, 2;
@@ -112,7 +112,7 @@ ORDER BY 1, 2;
 -- as new_vaccinations_smoothed is a smoothed variable, we get lower numbers
 SELECT cDea.continent, cDea.location, SUM(cast(cDea.new_deaths as bigint)) AS total_deaths, SUM(cast(cVac.new_vaccinations_smoothed as bigint)) AS total_vaccinations
 FROM PortfolioProject..covidDeaths cDea JOIN PortfolioProject..covidVaccinations cVac 
-ON cDea.location = cVac.location AND cDea.global_date = cVac.date
+	ON cDea.location = cVac.location AND cDea.global_date = cVac.date
 WHERE cDea.continent NOT IN ('') AND cVac.continent NOT IN ('')
 GROUP BY cDea.continent, cDea.location
 ORDER BY 1, 2;
@@ -121,7 +121,7 @@ ORDER BY 1, 2;
 SELECT cDea.continent, cDea.location, CONVERT(date, cVac.date) AS date, CONVERT(bigint, cDea.population),  CONVERT(bigint, cVac.new_vaccinations), 
 SUM(CONVERT(float, cVac.new_vaccinations)) OVER (Partition by cDea.location ORDER BY cDea.location, cDea.global_date) as RollingPeopleVaccinated
 FROM PortfolioProject..covidDeaths cDea JOIN PortfolioProject..covidVaccinations cVac 
-ON cDea.location = cVac.location AND cDea.global_date = cVac.date
+	ON cDea.location = cVac.location AND cDea.global_date = cVac.date
 WHERE cDea.continent NOT IN ('');
 
 -- Using a CTE
@@ -130,7 +130,7 @@ AS(
 SELECT cDea.continent, cDea.location, CONVERT(date, cVac.date) AS date, CONVERT(bigint, cDea.population),  CONVERT(bigint, cVac.new_vaccinations), 
 SUM(CONVERT(float, cVac.new_vaccinations)) OVER (Partition by cDea.location ORDER BY cDea.location, cDea.global_date) as RollingPeopleVaccinated
 FROM PortfolioProject..covidDeaths cDea JOIN PortfolioProject..covidVaccinations cVac 
-ON cDea.location = cVac.location AND cDea.global_date = cVac.date
+	ON cDea.location = cVac.location AND cDea.global_date = cVac.date
 WHERE cDea.continent NOT IN ('')
 )
 SELECT *, (RollingPeopleVaccinated/NULLIF(population, 0))*100
@@ -151,7 +151,7 @@ INSERT INTO #PercentPopulationVaccinated
 SELECT cDea.continent, cDea.location, CONVERT(date, cVac.date) AS date, CONVERT(bigint, cDea.population),  CONVERT(bigint, cVac.new_vaccinations), 
 SUM(CONVERT(float, cVac.new_vaccinations)) OVER (Partition by cDea.location ORDER BY cDea.location, cDea.global_date) as RollingPeopleVaccinated
 FROM PortfolioProject..covidDeaths cDea JOIN PortfolioProject..covidVaccinations cVac 
-ON cDea.location = cVac.location AND cDea.global_date = cVac.date
+	ON cDea.location = cVac.location AND cDea.global_date = cVac.date
 WHERE cDea.continent NOT IN ('')
 
 SELECT *, (RollingPeopleVaccinated/NULLIF(population, 0))*100
@@ -163,3 +163,15 @@ SELECT continent, MAX(cast(total_deaths as bigint)) as TotalDeathCount
 FROM PortfolioProject..covidDeaths
 WHERE continent NOT IN ('')
 GROUP BY continent 
+
+SELECT *
+FROM WorldWideDeaths;
+
+-- Breakdown by year
+SELECT YEAR(CONVERT(date, cVac.date)), cDea.continent, MAX(cast(cDea.total_deaths as bigint)) AS totalDeaths, MAX(cast(cVac.total_vaccinations as bigint)) AS totalVaccinations,
+MAX(cast(cVac.total_tests as bigint)) AS totalTests
+FROM PortfolioProject..covidDeaths cDea JOIN PortfolioProject..covidVaccinations cVac 
+ON cDea.location = cVac.location AND cDea.global_date = cVac.date
+WHERE cDea.continent NOT IN ('')
+GROUP BY YEAR(CONVERT(date, cVac.date)), cDea.continent
+ORDER BY YEAR(CONVERT(date, cVac.date)) ASC;
