@@ -1,3 +1,5 @@
+--Data from http://insideairbnb.com/mexico-city
+
 -- Looking to the top 100 rows of the data
 SELECT top 100 *
 FROM [Portfolio Airbnb]..airbnbData;
