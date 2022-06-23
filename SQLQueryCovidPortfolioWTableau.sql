@@ -34,7 +34,7 @@ ORDER BY PercentPopulationInfected DESC;
 --5.
 -- Breakdown by year
 SELECT YEAR(CONVERT(date, cVac.date)), cDea.continent, cDea.location,MAX(cast(cDea.total_deaths as bigint)) AS totalDeaths, MAX(cast(cVac.total_vaccinations as bigint)) AS totalVaccinations,
-MAX(cast(cVac.total_tests as bigint)) AS totalTests
+MAX(cast(cVac.total_tests as bigint)) AS totalTests, MAX((cast(total_cases as bigint)/NULLIF(cast(cVac.population as float), 0)))*100 AS PercentPopulationInfected
 FROM PortfolioProject..covidDeaths cDea JOIN PortfolioProject..covidVaccinations cVac 
 ON cDea.location = cVac.location AND cDea.global_date = cVac.date
 WHERE cDea.continent NOT IN ('')
