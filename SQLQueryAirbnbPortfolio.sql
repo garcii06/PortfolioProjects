@@ -57,10 +57,41 @@ GROUP BY neighbourhood, room_type
 ORDER BY neighbourhood;
 
 SELECT distinct host_id, host_name, count(*) as tot_rooms
-FROM [Portfolio Airbnb]..airbnbData
-WHERE last_review BETWEEN '2021-03-27' AND '2022-03-27'
+FROM [PortfolioAirbnb]..airbnbData
+WHERE last_review_date BETWEEN '2021-03-27' AND '2022-03-27'
 GROUP BY host_name, host_id
 ORDER BY tot_rooms DESC;
+
+/*
+	Ranking by Room price
+	TODO: fix rank_by_room
+*/
+ALTER TABLE airbnbData
+ADD rank_by_room smallint;
+
+SELECT *,
+	RANK() OVER(
+	PARTITION BY host_id,
+				host_name,
+				neighbourhood,
+				room_type
+				ORDER BY price) ranking_by_room
+FROM [PortfolioAirbnb]..airbnbData
+
+/*
+	Cleaning data
+*/
+SELECT *
+FROM [PortfolioAirbnb]..airbnbData;
+
+ALTER TABLE airbnbData
+ADD last_review_date date;
+
+UPDATE airbnbData
+SET last_review_date = CONVERT(date, last_review);
+
+ALTER TABLE airbnbData
+DROP COLUMN license, neighbourhood_group, last_review;
 
 --Things to do
 --Look into time and shared room, private room, apt with min time of 6 months and good pricing, for students
